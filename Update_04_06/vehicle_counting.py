@@ -85,18 +85,18 @@ class Vehicle_counting:
     """
     def Color_detector(self, frame):
         for j in range(len(self.rec)):
-            traffic_light = frame[self.rec[j][0][1]:self.rec[j][1][1] , self.rec[j][0][0]:self.rec[j][1][0]]
+            traffic_light = frame[self.rec[j][0][1]:self.rec[j][1][1] , self.rec[j][0][0]:self.rec[j][1][0]] #crop hinh trong khung duoc chon
             for i in range(len(self.boundaries)):
                 for (lower, upper) in self.boundaries[i]:
                     lower = np.array(lower, dtype = "uint8")
                     upper = np.array(upper, dtype = "uint8")
-                    mask = cv2.inRange(traffic_light, lower, upper)
+                    mask = cv2.inRange(traffic_light, lower, upper)                                          #xem co bao nhieu diem anh thuoc dai mau do, vang, xanh
                 #output = cv.bitwise_and(image, image, mask = mask)
                 #cv2_imshow(mask)
                 #print(mask)
                     print("box:{0}" .format(j))
-                    self.sum[i] = ma.sum(mask)
-                    if self.sum.index(np.max(self.sum)) == 0:
+                    self.sum[i] = ma.sum(mask)                                                               #Tinh tong cac diem anh thuoc dai mau do, xanh, vang
+                    if self.sum.index(np.max(self.sum)) == 0:                                                #xem tong diem anh cua mau nao lon nhat
                         print("red")
                     elif self.sum.index(np.max(self.sum)) == 1:
                         print("yellow")
@@ -287,42 +287,21 @@ class Vehicle_counting:
         bbox = tlwh
         midpoint = self.get_midpoint(bbox)
 
-
+        #Lay diem giua cua phuong tien tai hai frame lien ke
         if tid not in self.already_track_id:
             self.memory[tid] = deque(maxlen=2)
             self.already_track_id.append(tid)
             self.memory[tid].append(midpoint)
-
         previous_midpoint = self.memory[tid][0]
-        #print (tid)
-        #print(self.memory[tid])
-        #print (midpoint)
-        #print (previous_midpoint)
-    
-
-           
+        
         for i in range(len(self.line)) :
-            #print ("Line {0}: {1}, {2}".format (i,self.line[i][0], self.line[i][1]))
-            #print ("Object {0}: {1}, {2}".format(tid, midpoint, previous_midpoint))
-            #print (self._intersect(midpoint, previous_midpoint, self.line[i][0], self.line[i][1]))
-            #print (self._intersect(midpoint, previous_midpoint, self.line[2][0], self.line[2][1]))
+            #Neu vuot qua duong ke va phuong tien chua duoc dem bao gio
             if self._intersect(midpoint, previous_midpoint, self.line[i][0], self.line[i][1]) and tid not in self.already_counted[i]:
-
                 self.total_counter[i] +=1
                 self.already_counted[i].append(tid)  # Set already counted for ID to true.
-                #print (self.total_counter)
-                #angle = self._vector_angle(midpoint, previous_midpoint)
                 self.line_angle = self._line_angle(self.line[i][0],self.line[i][1])
-                #print(f"line angle:{line_angle}")
-
+                #Phan biet goc cua duong ke
                 if self.line_angle < 45 :
-                    """       
-                    if angle < 0:
-                        self.up_count += 1
-                    if angle > 0:
-                        self.down_count += 1
-                    """
-
                     if midpoint[1] - previous_midpoint[1] > 0 :
                         self.down_count[i] += 1
                     elif midpoint[1] - previous_midpoint[1] < 0 :
@@ -332,12 +311,5 @@ class Vehicle_counting:
                         self.to_right[i] += 1
                     elif midpoint[0] - previous_midpoint[0] < 0 :
                         self.to_left[i] += 1
-                """ 
-                if  len(self.total_counter) == i-1 or len(self.total_counter) == 0 :
-                    self.total_counter.append(0)
-                    self.down_count.append(0)
-                    self.up_count.append(0)
-                    self.to_left.append(0)
-                    self.to_right.append(0)
-                """
+     
 
