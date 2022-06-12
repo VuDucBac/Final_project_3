@@ -85,18 +85,21 @@ class Vehicle_counting:
     """
     def Color_detector(self, frame):
         for j in range(len(self.rec)):
-            traffic_light = frame[self.rec[j][0][1]:self.rec[j][1][1] , self.rec[j][0][0]:self.rec[j][1][0]] #crop hinh trong khung duoc chon
+            #crop hinh trong khung duoc chon
+            traffic_light = frame[self.rec[j][0][1]:self.rec[j][1][1] , self.rec[j][0][0]:self.rec[j][1][0]] 
             for i in range(len(self.boundaries)):
                 for (lower, upper) in self.boundaries[i]:
                     lower = np.array(lower, dtype = "uint8")
                     upper = np.array(upper, dtype = "uint8")
-                    mask = cv2.inRange(traffic_light, lower, upper)                                          #xem co bao nhieu diem anh thuoc dai mau do, vang, xanh
-                #output = cv.bitwise_and(image, image, mask = mask)
-                #cv2_imshow(mask)
-                #print(mask)
+                    #xem co bao nhieu diem anh thuoc dai mau do, vang, xanh
+                    mask = cv2.inRange(traffic_light, lower, upper)                                          
+
+
                     print("box:{0}" .format(j))
-                    self.sum[i] = ma.sum(mask)                                                               #Tinh tong cac diem anh thuoc dai mau do, xanh, vang
-                    if self.sum.index(np.max(self.sum)) == 0:                                                #xem tong diem anh cua mau nao lon nhat
+                    #Tinh tong cac diem anh thuoc dai mau do, xanh, vang
+                    self.sum[i] = ma.sum(mask)    
+                    #xem tong diem anh cua mau nao lon nhat
+                    if self.sum.index(np.max(self.sum)) == 0:                                                
                         print("red")
                     elif self.sum.index(np.max(self.sum)) == 1:
                         print("yellow")
